@@ -12,6 +12,9 @@ retrieval:
   rerank_top_k: 5
 
 generation:
-  model: "gpt-4o-mini"   # or a local HF model id
+  backend: "local"
+  model: "gpt-4o-mini"
+  generation:
+  local_model: "Qwen/Qwen2.5-0.5B-Instruct"
   max_tokens: 512
   temperature: 0.1
