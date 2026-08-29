@@ -1,4 +1,4 @@
-model: "gpt-4o-mini"
+model: "openai/gpt-oss-120b"
 embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
 
 memory:

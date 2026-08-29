@@ -13,9 +13,11 @@ from pydantic import BaseModel
 from agent import Agent
 from memory import MemoryStore
 
-with open("config.yaml") as f:
-    cfg = yaml.safe_load(f)
+from pathlib import Path
 
+_CONFIG_PATH = Path(__file__).parent.parent / "config.yaml"
+with open(_CONFIG_PATH) as f:
+    cfg = yaml.safe_load(f)
 app = FastAPI(title="Agentic Chatbot")
 memory_store = MemoryStore(cfg["memory"]["store_dir"], cfg["embedding_model"])
 agent = Agent(cfg, memory_store)
