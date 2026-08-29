@@ -1,0 +1,14 @@
+model: "gpt-4o-mini"
+embedding_model: "sentence-transformers/all-MiniLM-L6-v2"
+
+memory:
+  store_dir: "data/memory"
+  top_k_retrieve: 3
+  similarity_threshold: 0.35   # below this, don't inject memory (too irrelevant)
+
+agent:
+  max_tool_calls_per_turn: 3
+  system_prompt: >
+    You are a helpful assistant with access to tools and long-term memory
+    of this user. Use tools only when the question genuinely requires them
+    (calculation, lookup) -- don't call a tool for something you already know.

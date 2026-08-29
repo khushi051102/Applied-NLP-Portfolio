@@ -1,0 +1,10 @@
+venv/
+myenv/
+*_env/
+__pycache__/
+*.pyc
+data/
+*.parquet
+nltk_data/
+tensorflow_datasets/
+.ipynb_checkpoints/
