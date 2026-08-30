@@ -1,44 +1,35 @@
-# NLP Portfolio — Applied Projects
+cat > README.md << 'EOF'
+# Applied NLP Portfolio
 
-Three end-to-end applied NLP projects built to demonstrate production-relevant skills: retrieval-augmented generation, parameter-efficient fine-tuning, and agentic conversational systems with memory and tool use.
+Three applied NLP/LLM projects built end-to-end — retrieval, fine-tuning, and agentic tool-use — each with a working pipeline, custom evaluation, and honest documentation of what does and doesn't work.
+
+Built to go deeper than "call an API": understanding *why* hybrid retrieval beats dense-only search, what QLoRA actually changes about training memory, and how tool-calling and long-term memory work without relying on a single all-in-one framework.
 
 ## Projects
 
-| # | Project | Core Skills | Stack |
-|---|---------|-------------|-------|
-| 1 | [Domain RAG System](01-rag-system/) | Chunking, embeddings, hybrid retrieval, reranking, RAG evaluation | LangChain, FAISS, sentence-transformers, RAGAS |
-| 2 | [LoRA Fine-Tuning Pipeline](02-llm-finetuning/) | PEFT/LoRA, quantization, instruction tuning, eval harness | HuggingFace Transformers, PEFT, bitsandbytes |
-| 3 | [Agentic Chatbot with Memory](03-agentic-chatbot/) | Multi-turn dialogue, tool calling, long-term memory, deployment | LangGraph/FastAPI, vector memory store |
+| | What it does | Key techniques |
+|---|---|---|
+| **[01 — RAG System](./01-rag-system)** | Hybrid dense + sparse retrieval with cross-encoder reranking, then grounded LLM generation over SQuAD | FAISS, BM25, cross-encoder reranking, custom EM/F1/retrieval-hit-rate eval |
+| **[02 — LLM Fine-Tuning](./02-llm-finetuning)** | QLoRA fine-tune for structured text-to-JSON extraction, with before/after eval | 4-bit QLoRA, PEFT/LoRA, synthetic data generation, exact-match eval |
+| **[03 — Agentic Chatbot](./03-agentic-chatbot)** | Conversational agent with autonomous tool-calling and persistent long-term memory | Structured function-calling, FAISS vector memory, FastAPI |
 
-## Why these three
+## Design decisions common across all three
 
-Each project targets a different piece of the applied-NLP stack that shows up in ML engineering job descriptions: **retrieval systems**, **model adaptation**, and **agent orchestration**. Together they cover the pipeline from raw data → retrieval/inference → deployed, evaluatable system, rather than three isolated notebooks.
-
-## Suggested resume bullets
-
-- Built a hybrid retrieval-augmented generation system over [N] domain documents, combining dense + BM25 retrieval with cross-encoder reranking, improving answer faithfulness by [X]% (RAGAS) over naive RAG.
-- Fine-tuned a [7B] open-source LLM using LoRA/QLoRA on a domain-specific instruction dataset, achieving [X]% improvement on [task] while reducing trainable parameters by >99%.
-- Designed and deployed an agentic chatbot with persistent vector-based memory and external tool calling, served via FastAPI with sub-[X]s p95 latency.
-
-> Fill in real numbers once you've run experiments — don't put placeholder metrics on the actual resume.
-
-## Setup
-
-Each subproject has its own `requirements.txt` and `README.md` with run instructions. Recommended: one virtualenv per project to avoid dependency conflicts (transformers/peft versions vs. langchain versions can clash).
-
-```bash
-python -m venv .venv
-source .venv/bin/activate  # or .venv\Scripts\activate on Windows
-pip install -r 01-rag-system/requirements.txt
-```
+- **Same base model where local generation is used** (`Qwen/Qwen2.5-1.5B-Instruct`) — a deliberate choice for consistency and to keep everything runnable without paid API access, not an oversight.
+- **Custom evaluation over off-the-shelf metrics, when the off-the-shelf option doesn't fit the task** — e.g. exact-match/F1/retrieval-hit-rate instead of RAGAS (which needs an LLM judge) in 01, and parse-rate/exact-match/field-accuracy instead of ROUGE (built for free text, not structured JSON) in 02.
+- **Config-driven, not hardcoded** — model choice, hyperparameters, and backend (local vs. API) live in each project's `config.yaml`, not scattered through the code.
+- **Honest limitations documented, not hidden** — each project's README calls out what doesn't work well and why (e.g. 01's generation bottleneck, 02's date-field data bug, 03's session-scoped retrieval heuristic), rather than presenting only the best-case numbers.
 
 ## Repo structure
 
-```
-nlp-portfolio/
+\`\`\`
+Applied-NLP-Portfolio/
 ├── 01-rag-system/
 ├── 02-llm-finetuning/
 ├── 03-agentic-chatbot/
 ├── .gitignore
 └── LICENSE
-```
+\`\`\`
+
+Each project is self-contained with its own \`requirements.txt\`, \`config.yaml\`, and README — see the individual project READMEs (linked above) for setup, usage, architecture, and full results.
+EOF
