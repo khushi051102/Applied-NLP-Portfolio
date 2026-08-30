@@ -1,0 +1,24 @@
+{
+  "base": {
+    "parse_rate": 0.3,
+    "exact_match": 0.0,
+    "field_accuracy": {
+      "customer": 0.18,
+      "item": 0.06,
+      "quantity": 0.28,
+      "amount": 0.06,
+      "date": 0.1
+    }
+  },
+  "fine_tuned": {
+    "parse_rate": 1.0,
+    "exact_match": 0.68,
+    "field_accuracy": {
+      "customer": 1.0,
+      "item": 1.0,
+      "quantity": 1.0,
+      "amount": 1.0,
+      "date": 0.68
+    }
+  }
+}

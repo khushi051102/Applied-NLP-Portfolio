@@ -1,4 +1,4 @@
-base_model: "mistralai/Mistral-7B-Instruct-v0.2"   # swap for whatever fits your GPU
+base_model: "Qwen/Qwen2.5-1.5B-Instruct"   # matches base model used in 01-rag-system and 03-agentic-chatbot
 
 quantization:
   load_in_4bit: true
@@ -14,10 +14,11 @@ lora:
   task_type: "CAUSAL_LM"
 
 training:
-  num_train_epochs: 3
+  num_train_epochs: 6          # bumped from 3 -> dataset is small (~400 train examples), a few more
+                                # passes helps the model reliably lock onto the JSON output format
   per_device_train_batch_size: 4
   gradient_accumulation_steps: 4
-  learning_rate: 2e-4
+  learning_rate: 2.0e-4  # must have a decimal point, PyYAML parses "2e-4" as a string
   warmup_ratio: 0.03
   logging_steps: 10
   save_strategy: "epoch"

@@ -12,6 +12,12 @@ Key mechanism notes (for interview-readiness, not just to make it run):
 - `target_modules` controls which weight matrices get adapters -- attention
   Q/K/V/O projections are the standard choice since that's where most of
   the task-specific adaptation happens.
+
+Note on trl version: as of trl >= 0.16, dataset_text_field / max_length and
+other SFT-specific settings live on SFTConfig (not TrainingArguments/
+SFTTrainer directly), and the tokenizer is passed as processing_class=
+instead of tokenizer=. This script targets that current API. If you're on
+an older trl (< 0.16) pinned elsewhere, these lines will need adjusting back.
 """
 import argparse
 
@@ -23,9 +29,8 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig,
-    TrainingArguments,
 )
-from trl import SFTTrainer
+from trl import SFTConfig, SFTTrainer
 
 
 def load_config(path="config.yaml"):
@@ -72,27 +77,28 @@ def main():
     )
 
     t = cfg["training"]
-    training_args = TrainingArguments(
+    sft_config = SFTConfig(
         output_dir=args.output_dir,
         num_train_epochs=t["num_train_epochs"],
         per_device_train_batch_size=t["per_device_train_batch_size"],
         gradient_accumulation_steps=t["gradient_accumulation_steps"],
-        learning_rate=t["learning_rate"],
-        warmup_ratio=t["warmup_ratio"],
+        learning_rate=float(t["learning_rate"]),  # defensive cast
+        warmup_steps=t["warmup_ratio"],  # transformers v5+ removed warmup_ratio; warmup_steps now accepts a float < 1 as a ratio
         logging_steps=t["logging_steps"],
         save_strategy=t["save_strategy"],
         eval_strategy="epoch",
         bf16=True,
         report_to="none",
+        dataset_text_field="text",
+        max_length=1024,
     )
 
     trainer = SFTTrainer(
         model=model,
-        args=training_args,
+        args=sft_config,
         train_dataset=dataset["train"],
         eval_dataset=dataset["validation"],
-        dataset_text_field="text",
-        max_seq_length=1024,
+        processing_class=tokenizer,
     )
     trainer.train()
     trainer.save_model(args.output_dir)
